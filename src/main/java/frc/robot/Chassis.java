@@ -49,13 +49,16 @@ public class Chassis extends SubsystemBase {
 
     current_states = new SwerveModuleState[4];
 
-    odometry = new SwerveDriveOdometry(swerve_kinematics, angle, getModulePositions());
+    // odometry = new SwerveDriveOdometry(swerve_kinematics, angle,
+        // new SwerveModulePosition[] { new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(),
+            // new SwerveModulePosition() });
+
 
     navx = new AHRS();
 
     swerve_kinematics = SwerveModuleConstants.swerveKinematics;
 
-    drive_mode = control_mode.robot_oriented;
+    drive_mode = control_mode.field_oriented;
 
     calibrate();
 
@@ -65,7 +68,8 @@ public class Chassis extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    // return odometry.getPoseMeters();
+    return new Pose2d();
   }
 
   public void resetOdometry(Pose2d initalPose2d) {
@@ -118,7 +122,7 @@ public class Chassis extends SubsystemBase {
     }
 
     angle = navx.getRotation2d();
-    odometry.update(angle, getModulePositions());
+    // odometry.update(angle, getModulePositions());
     SmartDashboard.putNumber("chassis angle", angle.getDegrees());
   }
 

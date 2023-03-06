@@ -78,9 +78,9 @@ public class SwerveModule extends SubsystemBase {
     sparkMax.setIdleMode(IdleMode.kCoast);
     sparkMax.setClosedLoopRampRate(0.01);
     sparkMax.enableVoltageCompensation(12);
-    // sparkMax.getEncoder().setPosition(absEncoder.getAbsolutePosition() /
-    // SwerveModuleConstants.steeringPositionConversionFactor);
-    sparkMax.getEncoder().setPosition(0);
+    sparkMax.getEncoder().setPosition(absEncoder.getAbsolutePosition() /
+        SwerveModuleConstants.steeringPositionConversionFactor);
+    // sparkMax.getEncoder().setPosition(0);
 
     return sparkMax;
   }

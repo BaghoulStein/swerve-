@@ -12,7 +12,7 @@ public class SwerveModuleConstants {
       new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
       new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
 
-  public static final double freeSpeedMetersPerSecond = 4;
+  public static final double freeSpeedMetersPerSecond = 2;
   public static final double driveRatio = 6.75;
   public static final double steeringRatio = 12.5;
   public static final double wheelRadiusMeters = 0.0508; // 2 inches (in meters)
@@ -30,10 +30,10 @@ public class SwerveModuleConstants {
   // public final static double cancoderBLOffset = 0;
   // public final static double cancoderBROffset = 0;
 
-  public final static double cancoderTLOffset = 140.800;
-  public final static double cancoderTROffset = 285.117;
-  public final static double cancoderBLOffset = 233.964;
-  public final static double cancoderBROffset = 122.341;
+  public final static double cancoderTLOffset = 139.218;
+  public final static double cancoderTROffset = 290.830;
+  public final static double cancoderBLOffset = 234.404;
+  public final static double cancoderBROffset = 179.12109375;
 
   public final int idDrive;
   public final PIDFGains driveGains;

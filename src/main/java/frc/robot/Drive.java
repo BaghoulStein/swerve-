@@ -21,8 +21,8 @@ public class Drive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    chassis.drive(-RobotContainer.getRawAxis(1) * SwerveModuleConstants.freeSpeedMetersPerSecond,
-        RobotContainer.getRawAxis(0) * SwerveModuleConstants.freeSpeedMetersPerSecond,
+    chassis.drive(RobotContainer.getRawAxis(1) * SwerveModuleConstants.freeSpeedMetersPerSecond,
+        -RobotContainer.getRawAxis(0) * SwerveModuleConstants.freeSpeedMetersPerSecond,
         RobotContainer.getRawAxis(2) * 10);
   }
 

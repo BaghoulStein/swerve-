@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -74,8 +75,8 @@ public class SwerveModule extends SubsystemBase {
     sparkMax.setIdleMode(IdleMode.kCoast);
     sparkMax.setClosedLoopRampRate(0.01);
     sparkMax.enableVoltageCompensation(12);
-    sparkMax.getEncoder().setPosition(absEncoder.getAbsolutePosition() / SwerveModuleConstants.steeringPositionConversionFactor);
-    // sparkMax.getEncoder().setPosition(0);
+    // sparkMax.getEncoder().setPosition(absEncoder.getAbsolutePosition() / SwerveModuleConstants.steeringPositionConversionFactor);
+    sparkMax.getEncoder().setPosition(0);
 
     return sparkMax;
   }
@@ -83,8 +84,8 @@ public class SwerveModule extends SubsystemBase {
   private CANCoder configCANCoder(int id, double zeroAngle) {
 
     CANCoder canCoder = new CANCoder(id);
-    // canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-    canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+    canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+    // canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
     // Configure the offset angle of the magnet
     canCoder.configMagnetOffset(360 - zeroAngle);
 
@@ -168,6 +169,13 @@ public class SwerveModule extends SubsystemBase {
 
   public void lockPosition() {
     steer.getPIDController().setReference(degreesToRotations(state.angle.getDegrees()), ControlType.kPosition);
+  }
+
+  public SwerveModulePosition getModulePosition() {
+    return new SwerveModulePosition(
+      spin.getSelectedSensorPosition() / 2048 / SwerveModuleConstants.driveRatio,
+      state.angle
+    );
   }
 
   public void stop() {

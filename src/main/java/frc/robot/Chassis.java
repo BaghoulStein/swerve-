@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -34,6 +36,7 @@ public class Chassis extends SubsystemBase {
 
   private ChassisSpeeds target_speeds;
   private ChassisSpeeds field_oriented_target_speeds;
+  private SwerveDriveOdometry odometry;
 
   private Rotation2d angle;
 
@@ -46,12 +49,14 @@ public class Chassis extends SubsystemBase {
     swerve_modules[wheels.right_back.ordinal()] = new SwerveModule(RobotContainer.BRModule);
 
     current_states = new SwerveModuleState[4];
+    
+    odometry = new SwerveDriveOdometry(swerve_kinematics, angle, getModulePositions());
  
     navx= new AHRS();
 
     swerve_kinematics = SwerveModuleConstants.swerveKinematics;
 
-    drive_mode = control_mode.field_oriented;
+    drive_mode = control_mode.robot_oriented;
 
 
 
@@ -60,6 +65,23 @@ public class Chassis extends SubsystemBase {
     reset(new Pose2d());
     navx.reset();
     CommandScheduler.getInstance().registerSubsystem(this);
+  }
+
+  public Pose2d getPose() { return odometry.getPoseMeters(); }
+
+  public void resetOdometry(Pose2d initalPose2d) {
+    resetOdometry(navx.getRotation2d(),
+        getModulePositions(),
+        initalPose2d);
+  }
+
+  public SwerveModulePosition[] getModulePositions() {
+    return new SwerveModulePosition[] { swerve_modules[0].getModulePosition(), swerve_modules[1].getModulePosition(),
+            swerve_modules[2].getModulePosition(), swerve_modules[3].getModulePosition()};
+  }
+
+  public void resetOdometry(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions, Pose2d pose) {
+    odometry.resetPosition(gyroAngle, modulePositions, pose);
   }
 
 
@@ -97,11 +119,22 @@ public class Chassis extends SubsystemBase {
     }
 
     angle = navx.getRotation2d();
+    odometry.update(angle, getModulePositions());
     SmartDashboard.putNumber("chassis angle", angle.getDegrees());
   }
 
   public void setControlMode(control_mode drive_mode) {
     this.drive_mode = drive_mode;
+  }
+
+  public void setChassisSpeeds(ChassisSpeeds target_speeds) {
+    this.target_speeds = target_speeds;
+
+    SwerveModuleState[] desiredStates = swerve_kinematics.toSwerveModuleStates(target_speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveModuleConstants.freeSpeedMetersPerSecond);
+    for (wheels wheel : wheels.values()) {
+      swerve_modules[wheel.ordinal()].set(desiredStates[wheel.ordinal()]);
+    }
   }
 
     public void setSpeeds(ChassisSpeeds target_speeds) {

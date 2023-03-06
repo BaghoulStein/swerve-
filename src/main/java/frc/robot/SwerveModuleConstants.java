@@ -20,15 +20,18 @@ public class SwerveModuleConstants {
   public static final double driveDPRMeters = wheelCircumferenceMeters * driveRatio;
   public static final double steeringPositionConversionFactor = 1 / steeringRatio * 360; // degrees / rotation
   public static final double steeringVelocityConversionFactor = steeringPositionConversionFactor / 60; // degrees / (rotations * seconds/minute) 
+  public static final PIDFGains xAutoPID = new PIDFGains(0.05, 0, 0);
+  public static final PIDFGains yAutoPID = new PIDFGains(0.05, 0, 0);
+  public static final PIDFGains angleAutoPID = new PIDFGains(0.1, 0, 0);
   // public final static double cancoderTLOffset = 0;
   // public final static double cancoderTROffset = 0;
   // public final static double cancoderBLOffset = 0;
   // public final static double cancoderBROffset = 0;
 
-  public final static double cancoderTLOffset = 143.701;
-  public final static double cancoderTROffset = 274.921;
-  public final static double cancoderBLOffset = 235.283;
-  public final static double cancoderBROffset = 338.642;
+  public final static double cancoderTLOffset = 140.800;
+  public final static double cancoderTROffset = 285.117;
+  public final static double cancoderBLOffset = 233.964;
+  public final static double cancoderBROffset = 122.341;
 
   public final int idDrive;
   public final PIDFGains driveGains;

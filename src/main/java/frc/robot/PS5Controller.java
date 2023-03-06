@@ -1,6 +1,5 @@
 package frc.robot;
 
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
@@ -8,231 +7,234 @@ import edu.wpi.first.wpilibj.event.EventLoop;
 /** PS5 Controller class for FRC - Taken from D-Bug#3166 */
 public class PS5Controller extends GenericHID {
 
-    public PS5Controller(int port) {
-        super(port);
-    }
-    /** Represents a digital button on a PS5Controller. */
-    public enum Button {
-        kSquare(1),
-        kCross(2),
-        kCircle(3),
-        kTriangle(4),
-        kL1(5),
-        kR1(6),
-        kL2(7),
-        kR2(8),
-        kShare(9),
-        kOptions(10),
-        kL3(11),
-        kR3(12),
-        kPS(13),
-        kTouchpad(14),
-        kMute(15);
+  public PS5Controller(int port) {
+    super(port);
+  }
 
-        public final int value;
+  /** Represents a digital button on a PS5Controller. */
+  public enum Button {
+    kSquare(1),
+    kCross(2),
+    kCircle(3),
+    kTriangle(4),
+    kL1(5),
+    kR1(6),
+    kL2(7),
+    kR2(8),
+    kShare(9),
+    kOptions(10),
+    kL3(11),
+    kR3(12),
+    kPS(13),
+    kTouchpad(14),
+    kMute(15);
 
-        Button(int index) {
-            this.value = index;
-        }
+    public final int value;
 
-        /**
-         * Get the human-friendly name of the button, matching the relevant methods.
-         * This is done by
-         * stripping the leading `k`, and if not the touchpad append `Button`.
-         *
-         * <p>
-         * Primarily used for automated unit tests.
-         *
-         * @return the human-friendly name of the button.
-         */
-        @Override
-        public String toString() {
-            var button = this.name().substring(1);
-            if (this == kTouchpad) return button;
-            return button + "Button";
-        }
-
-    }
-
-    /** Represents an axis on a PS5Controller. */
-    public enum Axis {
-        kLeftX(0),
-        kLeftY(1),
-        kRightX(2),
-        kRightY(5),
-        kL2(3),
-        kR2(4);
-
-        public final int value;
-
-        Axis(int index) {
-            value = index;
-        }
-
-        /**
-         * Get the human-friendly name of the axis, matching the relevant methods. This
-         * is done by
-         * stripping the leading `k`, and if one of L2/R2 append `Axis`.
-         *
-         * <p>
-         * Primarily used for automated unit tests.
-         *
-         * @return the human-friendly name of the axis.
-         */
-        @Override
-        public String toString() {
-            var axis = this.name().substring(1);
-            if (axis.endsWith("2")) return axis + "Axis";
-            return axis;
-        }
-    }
-
-        /**
-     * Get the X axis value of left side of the controller.
-     *
-     * @return the axis value.
-     */
-    public double getLeftX() {
-        return getRawAxis(Axis.kLeftX.value);
+    Button(int index) {
+      this.value = index;
     }
 
     /**
-     * Get the X axis value of right side of the controller.
+     * Get the human-friendly name of the button, matching the relevant methods.
+     * This is done by
+     * stripping the leading `k`, and if not the touchpad append `Button`.
      *
-     * @return the axis value.
+     * <p>
+     * Primarily used for automated unit tests.
+     *
+     * @return the human-friendly name of the button.
      */
-    public double getRightX() {
-        return getRawAxis(Axis.kRightX.value);
+    @Override
+    public String toString() {
+      var button = this.name().substring(1);
+      if (this == kTouchpad)
+        return button;
+      return button + "Button";
+    }
+
+  }
+
+  /** Represents an axis on a PS5Controller. */
+  public enum Axis {
+    kLeftX(0),
+    kLeftY(1),
+    kRightX(2),
+    kRightY(5),
+    kL2(3),
+    kR2(4);
+
+    public final int value;
+
+    Axis(int index) {
+      value = index;
     }
 
     /**
-     * Get the Y axis value of left side of the controller.
+     * Get the human-friendly name of the axis, matching the relevant methods. This
+     * is done by
+     * stripping the leading `k`, and if one of L2/R2 append `Axis`.
      *
-     * @return the axis value.
-     */
-    public double getLeftY() {
-        return getRawAxis(Axis.kLeftY.value);
-    }
-
-    /**
-     * Get the Y axis value of right side of the controller.
+     * <p>
+     * Primarily used for automated unit tests.
      *
-     * @return the axis value.
+     * @return the human-friendly name of the axis.
      */
-    public double getRightY() {
-        return getRawAxis(Axis.kRightY.value);
+    @Override
+    public String toString() {
+      var axis = this.name().substring(1);
+      if (axis.endsWith("2"))
+        return axis + "Axis";
+      return axis;
     }
+  }
 
-    /**
-     * Get the L2 axis value of the controller. Note that this axis is bound to the
-     * range of [0, 1] as
-     * opposed to the usual [-1, 1].
-     *
-     * @return the axis value.
-     */
-    public double getL2Axis() {
-        return getRawAxis(Axis.kL2.value);
-    }
+  /**
+   * Get the X axis value of left side of the controller.
+   *
+   * @return the axis value.
+   */
+  public double getLeftX() {
+    return getRawAxis(Axis.kLeftX.value);
+  }
 
-    /**
-     * Get the R2 axis value of the controller. Note that this axis is bound to the
-     * range of [0, 1] as
-     * opposed to the usual [-1, 1].
-     *
-     * @return the axis value.
-     */
-    public double getR2Axis() {
-        return getRawAxis(Axis.kR2.value);
-    }
+  /**
+   * Get the X axis value of right side of the controller.
+   *
+   * @return the axis value.
+   */
+  public double getRightX() {
+    return getRawAxis(Axis.kRightX.value);
+  }
 
-    /**
-     * Read the value of the left trigger button on the controller.
-     *
-     * @return The state of the button.
-     */
-    public boolean getL2Button() {
-        return getRawButton(Button.kL2.value);
-    }
+  /**
+   * Get the Y axis value of left side of the controller.
+   *
+   * @return the axis value.
+   */
+  public double getLeftY() {
+    return getRawAxis(Axis.kLeftY.value);
+  }
 
-    /**
-     * Read the value of the right trigger button on the controller.
-     *
-     * @return The state of the button.
-     */
-    public boolean getR2Button() {
-        return getRawButton(Button.kR2.value);
-    }
+  /**
+   * Get the Y axis value of right side of the controller.
+   *
+   * @return the axis value.
+   */
+  public double getRightY() {
+    return getRawAxis(Axis.kRightY.value);
+  }
 
-    /**
-     * Whether the L2 button was pressed since the last check.
-     *
-     * @return Whether the button was pressed since the last check.
-     */
-    public boolean getL2ButtonPressed() {
-        return getRawButtonPressed(Button.kL2.value);
-    }
+  /**
+   * Get the L2 axis value of the controller. Note that this axis is bound to the
+   * range of [0, 1] as
+   * opposed to the usual [-1, 1].
+   *
+   * @return the axis value.
+   */
+  public double getL2Axis() {
+    return getRawAxis(Axis.kL2.value);
+  }
 
-    /**
-     * Whether the R2 button was pressed since the last check.
-     *
-     * @return Whether the button was pressed since the last check.
-     */
-    public boolean getR2ButtonPressed() {
-        return getRawButtonPressed(Button.kR2.value);
-    }
+  /**
+   * Get the R2 axis value of the controller. Note that this axis is bound to the
+   * range of [0, 1] as
+   * opposed to the usual [-1, 1].
+   *
+   * @return the axis value.
+   */
+  public double getR2Axis() {
+    return getRawAxis(Axis.kR2.value);
+  }
 
-    /**
-     * Whether the L2 button was released since the last check.
-     *
-     * @return Whether the button was released since the last check.
-     */
-    public boolean getL2ButtonReleased() {
-        return getRawButtonReleased(Button.kL2.value);
-    }
+  /**
+   * Read the value of the left trigger button on the controller.
+   *
+   * @return The state of the button.
+   */
+  public boolean getL2Button() {
+    return getRawButton(Button.kL2.value);
+  }
 
-    /**
-     * Whether the R2 button was released since the last check.
-     *
-     * @return Whether the button was released since the last check.
-     */
-    public boolean getR2ButtonReleased() {
-        return getRawButtonReleased(Button.kR2.value);
-    }
+  /**
+   * Read the value of the right trigger button on the controller.
+   *
+   * @return The state of the button.
+   */
+  public boolean getR2Button() {
+    return getRawButton(Button.kR2.value);
+  }
 
+  /**
+   * Whether the L2 button was pressed since the last check.
+   *
+   * @return Whether the button was pressed since the last check.
+   */
+  public boolean getL2ButtonPressed() {
+    return getRawButtonPressed(Button.kL2.value);
+  }
 
-    /**
-     * Read the value of the mute button on the controller.
-     *
-     * @return The state of the mute button.
-     */
-    public boolean getMute() {
-        return getRawButton(Button.kMute.value);
-    }
+  /**
+   * Whether the R2 button was pressed since the last check.
+   *
+   * @return Whether the button was pressed since the last check.
+   */
+  public boolean getR2ButtonPressed() {
+    return getRawButtonPressed(Button.kR2.value);
+  }
 
-    /**
-     * Whether the mute button was pressed since the last check.
-     *
-     * @return Whether the mute button was pressed since the last check.
-     */
-    public boolean getMutePressed() {
-        return getRawButtonPressed(Button.kMute.value);
-    }
+  /**
+   * Whether the L2 button was released since the last check.
+   *
+   * @return Whether the button was released since the last check.
+   */
+  public boolean getL2ButtonReleased() {
+    return getRawButtonReleased(Button.kL2.value);
+  }
 
-    /**
-     * Whether the mute button was released since the last check.
-     *
-     * @return Whether the mute button was released since the last check.
-     */
-    public boolean getMuteReleased() {
-        return getRawButtonReleased(Button.kMute.value);
-    }
+  /**
+   * Whether the R2 button was released since the last check.
+   *
+   * @return Whether the button was released since the last check.
+   */
+  public boolean getR2ButtonReleased() {
+    return getRawButtonReleased(Button.kR2.value);
+  }
 
-     /**
+  /**
+   * Read the value of the mute button on the controller.
+   *
+   * @return The state of the mute button.
+   */
+  public boolean getMute() {
+    return getRawButton(Button.kMute.value);
+  }
+
+  /**
+   * Whether the mute button was pressed since the last check.
+   *
+   * @return Whether the mute button was pressed since the last check.
+   */
+  public boolean getMutePressed() {
+    return getRawButtonPressed(Button.kMute.value);
+  }
+
+  /**
+   * Whether the mute button was released since the last check.
+   *
+   * @return Whether the mute button was released since the last check.
+   */
+  public boolean getMuteReleased() {
+    return getRawButtonReleased(Button.kMute.value);
+  }
+
+  /**
    * Constructs an event instance around the L2 button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the L2 button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the L2 button's digital signal
+   *         attached to the given
+   *         loop.
    */
   @SuppressWarnings("MethodName")
   public BooleanEvent L2(EventLoop loop) {
@@ -243,8 +245,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the R2 button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the R2 button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the R2 button's digital signal
+   *         attached to the given
+   *         loop.
    */
   @SuppressWarnings("MethodName")
   public BooleanEvent R2(EventLoop loop) {
@@ -309,8 +312,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the L1 button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the L1 button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the L1 button's digital signal
+   *         attached to the given
+   *         loop.
    */
   @SuppressWarnings("MethodName")
   public BooleanEvent L1(EventLoop loop) {
@@ -321,8 +325,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the R1 button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the R1 button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the R1 button's digital signal
+   *         attached to the given
+   *         loop.
    */
   @SuppressWarnings("MethodName")
   public BooleanEvent R1(EventLoop loop) {
@@ -330,7 +335,8 @@ public class PS5Controller extends GenericHID {
   }
 
   /**
-   * Read the value of the L3 button (pressing the left analog stick) on the controller.
+   * Read the value of the L3 button (pressing the left analog stick) on the
+   * controller.
    *
    * @return The state of the button.
    */
@@ -339,7 +345,8 @@ public class PS5Controller extends GenericHID {
   }
 
   /**
-   * Read the value of the R3 button (pressing the right analog stick) on the controller.
+   * Read the value of the R3 button (pressing the right analog stick) on the
+   * controller.
    *
    * @return The state of the button.
    */
@@ -387,8 +394,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the L3 button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the L3 button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the L3 button's digital signal
+   *         attached to the given
+   *         loop.
    */
   @SuppressWarnings("MethodName")
   public BooleanEvent L3(EventLoop loop) {
@@ -399,8 +407,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the R3 button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the R3 button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the R3 button's digital signal
+   *         attached to the given
+   *         loop.
    */
   @SuppressWarnings("MethodName")
   public BooleanEvent R3(EventLoop loop) {
@@ -438,8 +447,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the square button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the square button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the square button's digital signal
+   *         attached to the given
+   *         loop.
    */
   public BooleanEvent square(EventLoop loop) {
     return new BooleanEvent(loop, this::getSquareButton);
@@ -476,8 +486,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the cross button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the cross button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the cross button's digital signal
+   *         attached to the given
+   *         loop.
    */
   public BooleanEvent cross(EventLoop loop) {
     return new BooleanEvent(loop, this::getCrossButton);
@@ -514,8 +525,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the triangle button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the triangle button's digital signal attached to the
-   *     given loop.
+   * @return an event instance representing the triangle button's digital signal
+   *         attached to the
+   *         given loop.
    */
   public BooleanEvent triangle(EventLoop loop) {
     return new BooleanEvent(loop, this::getTriangleButton);
@@ -552,8 +564,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the circle button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the circle button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the circle button's digital signal
+   *         attached to the given
+   *         loop.
    */
   public BooleanEvent circle(EventLoop loop) {
     return new BooleanEvent(loop, this::getCircleButton);
@@ -590,8 +603,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the share button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the share button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the share button's digital signal
+   *         attached to the given
+   *         loop.
    */
   @SuppressWarnings("MethodName")
   public BooleanEvent share(EventLoop loop) {
@@ -629,8 +643,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the PS button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the PS button's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the PS button's digital signal
+   *         attached to the given
+   *         loop.
    */
   @SuppressWarnings("MethodName")
   public BooleanEvent PS(EventLoop loop) {
@@ -668,8 +683,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the options button's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the options button's digital signal attached to the
-   *     given loop.
+   * @return an event instance representing the options button's digital signal
+   *         attached to the
+   *         given loop.
    */
   public BooleanEvent options(EventLoop loop) {
     return new BooleanEvent(loop, this::getOptionsButton);
@@ -706,8 +722,9 @@ public class PS5Controller extends GenericHID {
    * Constructs an event instance around the touchpad's digital signal.
    *
    * @param loop the event loop instance to attach the event to.
-   * @return an event instance representing the touchpad's digital signal attached to the given
-   *     loop.
+   * @return an event instance representing the touchpad's digital signal attached
+   *         to the given
+   *         loop.
    */
   public BooleanEvent touchpad(EventLoop loop) {
     return new BooleanEvent(loop, this::getTouchpad);

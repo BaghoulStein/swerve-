@@ -20,7 +20,7 @@ public class SwerveModule extends SubsystemBase {
   private TalonFX spin;
   private CANSparkMax steer;
   private CANCoder absEncoder;
-  
+
   private double steer_rotations;
   public String moduleName;
   private SwerveModuleState target;
@@ -29,7 +29,8 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModule(SwerveModuleConstants cModuleConstants) {
     absEncoder = configCANCoder(cModuleConstants.canCoderId, cModuleConstants.cancoderZeroAngle);
     spin = configTalonFX(cModuleConstants.idDrive, cModuleConstants.driveGains, cModuleConstants.isDriveInverted);
-    steer = configSparkMax(cModuleConstants.idSteering, cModuleConstants.steeringGains, cModuleConstants.isSteeringInverted);
+    steer = configSparkMax(cModuleConstants.idSteering, cModuleConstants.steeringGains,
+        cModuleConstants.isSteeringInverted);
 
     steer_rotations = 0;
     target = new SwerveModuleState();
@@ -56,10 +57,12 @@ public class SwerveModule extends SubsystemBase {
 
   public void update() {
     SmartDashboard.putNumber(moduleName + "Cancoder position", getAbsolutePosition());
-    SmartDashboard.putNumber(moduleName + " Ceo encoder position", steer.getEncoder().getPosition() * SwerveModuleConstants.steeringPositionConversionFactor);
+    SmartDashboard.putNumber(moduleName + " Ceo encoder position",
+        steer.getEncoder().getPosition() * SwerveModuleConstants.steeringPositionConversionFactor);
     steer_rotations = steer.getEncoder().getPosition() / SwerveModuleConstants.steeringRatio;
     state.angle = Rotation2d.fromDegrees(steer_rotations * 360.0);
-    state.speedMetersPerSecond = getRPS() * SwerveModuleConstants.wheelCircumferenceMeters / SwerveModuleConstants.driveRatio;
+    state.speedMetersPerSecond = getRPS() * SwerveModuleConstants.wheelCircumferenceMeters
+        / SwerveModuleConstants.driveRatio;
   }
 
   private CANSparkMax configSparkMax(int id,
@@ -75,7 +78,8 @@ public class SwerveModule extends SubsystemBase {
     sparkMax.setIdleMode(IdleMode.kCoast);
     sparkMax.setClosedLoopRampRate(0.01);
     sparkMax.enableVoltageCompensation(12);
-    // sparkMax.getEncoder().setPosition(absEncoder.getAbsolutePosition() / SwerveModuleConstants.steeringPositionConversionFactor);
+    // sparkMax.getEncoder().setPosition(absEncoder.getAbsolutePosition() /
+    // SwerveModuleConstants.steeringPositionConversionFactor);
     sparkMax.getEncoder().setPosition(0);
 
     return sparkMax;
@@ -104,7 +108,6 @@ public class SwerveModule extends SubsystemBase {
     target = new SwerveModuleState();
     state = new SwerveModuleState();
   }
-
 
   private TalonFX configTalonFX(int id, PIDFGains gains, boolean isInverted) {
     TalonFX talon = new TalonFX(id);
@@ -136,15 +139,15 @@ public class SwerveModule extends SubsystemBase {
         ControlType.kPosition);
   }
 
-  private double meterPerSecToRPS(double speed) { 
+  private double meterPerSecToRPS(double speed) {
     return speed * SwerveModuleConstants.driveRatio / SwerveModuleConstants.wheelCircumferenceMeters;
   }
-  
+
   public double getRPS() {
     return spin.getSelectedSensorVelocity() * 10 / 2048;
   }
 
-    private double degreesToRotations(double angle) { 
+  private double degreesToRotations(double angle) {
     return angle * SwerveModuleConstants.steeringRatio / 360.0;
   }
 
@@ -173,9 +176,8 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(
-      spin.getSelectedSensorPosition() / 2048 / SwerveModuleConstants.driveRatio,
-      state.angle
-    );
+        spin.getSelectedSensorPosition() / 2048 / SwerveModuleConstants.driveRatio,
+        state.angle);
   }
 
   public void stop() {
@@ -183,12 +185,11 @@ public class SwerveModule extends SubsystemBase {
     steer.set(0);
   }
 
-
   public SwerveModuleState getState() {
     return state;
   }
 
-  public double getSpeed(){
+  public double getSpeed() {
     return state.speedMetersPerSecond;
   }
 

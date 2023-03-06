@@ -19,7 +19,9 @@ public class SwerveModuleConstants {
   public static final double wheelCircumferenceMeters = wheelRadiusMeters * 2 * Math.PI;
   public static final double driveDPRMeters = wheelCircumferenceMeters * driveRatio;
   public static final double steeringPositionConversionFactor = 1 / steeringRatio * 360; // degrees / rotation
-  public static final double steeringVelocityConversionFactor = steeringPositionConversionFactor / 60; // degrees / (rotations * seconds/minute) 
+  public static final double steeringVelocityConversionFactor = steeringPositionConversionFactor / 60; // degrees /
+                                                                                                       // (rotations *
+                                                                                                       // seconds/minute)
   public static final PIDFGains xAutoPID = new PIDFGains(0.05, 0, 0);
   public static final PIDFGains yAutoPID = new PIDFGains(0.05, 0, 0);
   public static final PIDFGains angleAutoPID = new PIDFGains(0.1, 0, 0);
@@ -49,7 +51,8 @@ public class SwerveModuleConstants {
   }
 
   public SwerveModuleConstants(int idDrive, int idSteering, PIDFGains driveGains,
-      PIDFGains steeringGains, double cancoderZeroAngle, int canCoderId, boolean isSteeringInverted, boolean isDriveInverted) {
+      PIDFGains steeringGains, double cancoderZeroAngle, int canCoderId, boolean isSteeringInverted,
+      boolean isDriveInverted) {
     this.idDrive = idDrive;
     this.driveGains = driveGains;
     this.idSteering = idSteering;

@@ -40,7 +40,6 @@ public class Chassis extends SubsystemBase {
 
   private Rotation2d angle;
 
-
   private Chassis() {
     swerve_modules = new SwerveModule[4];
     swerve_modules[wheels.left_front.ordinal()] = new SwerveModule(RobotContainer.FLModule);
@@ -49,16 +48,14 @@ public class Chassis extends SubsystemBase {
     swerve_modules[wheels.right_back.ordinal()] = new SwerveModule(RobotContainer.BRModule);
 
     current_states = new SwerveModuleState[4];
-    
+
     odometry = new SwerveDriveOdometry(swerve_kinematics, angle, getModulePositions());
- 
-    navx= new AHRS();
+
+    navx = new AHRS();
 
     swerve_kinematics = SwerveModuleConstants.swerveKinematics;
 
     drive_mode = control_mode.robot_oriented;
-
-
 
     calibrate();
 
@@ -67,7 +64,9 @@ public class Chassis extends SubsystemBase {
     CommandScheduler.getInstance().registerSubsystem(this);
   }
 
-  public Pose2d getPose() { return odometry.getPoseMeters(); }
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
 
   public void resetOdometry(Pose2d initalPose2d) {
     resetOdometry(navx.getRotation2d(),
@@ -77,15 +76,14 @@ public class Chassis extends SubsystemBase {
 
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] { swerve_modules[0].getModulePosition(), swerve_modules[1].getModulePosition(),
-            swerve_modules[2].getModulePosition(), swerve_modules[3].getModulePosition()};
+        swerve_modules[2].getModulePosition(), swerve_modules[3].getModulePosition() };
   }
 
   public void resetOdometry(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions, Pose2d pose) {
     odometry.resetPosition(gyroAngle, modulePositions, pose);
   }
 
-
-    public void calibrate() {
+  public void calibrate() {
     navx.calibrate();
   }
 
@@ -95,7 +93,7 @@ public class Chassis extends SubsystemBase {
       current_states[wheel.ordinal()] = new SwerveModuleState();
     }
 
-    //prototype.reset();
+    // prototype.reset();
 
     navx.reset();
     navx.setAngleAdjustment(position.getRotation().getDegrees());
@@ -108,7 +106,8 @@ public class Chassis extends SubsystemBase {
   }
 
   public static Chassis getInstance() {
-    if (instance == null) instance = new Chassis();
+    if (instance == null)
+      instance = new Chassis();
     return instance;
   }
 
@@ -137,12 +136,12 @@ public class Chassis extends SubsystemBase {
     }
   }
 
-    public void setSpeeds(ChassisSpeeds target_speeds) {
+  public void setSpeeds(ChassisSpeeds target_speeds) {
     this.target_speeds = target_speeds;
-    //constraintTargetSpeedsVelocity();
-    //constraintTargetSpeedsAngularVelocity();
-    //constraintTargetSpeedsAcceleration();
-    //constraintTargetSpeedsAngularAcceleration();
+    // constraintTargetSpeedsVelocity();
+    // constraintTargetSpeedsAngularVelocity();
+    // constraintTargetSpeedsAcceleration();
+    // constraintTargetSpeedsAngularAcceleration();
 
     SwerveModuleState[] targets = getTargetModuleStates();
     SwerveDriveKinematics.desaturateWheelSpeeds(targets, SwerveModuleConstants.freeSpeedMetersPerSecond);
@@ -151,16 +150,16 @@ public class Chassis extends SubsystemBase {
     }
   }
 
-  public void drive(double xSpeed, double ySpeed, double rot) 
-  {
+  public void drive(double xSpeed, double ySpeed, double rot) {
     SmartDashboard.putNumber("xSpeed", xSpeed);
     SmartDashboard.putNumber("ySpeed", ySpeed);
     SmartDashboard.putNumber("rot", rot);
     SwerveModuleState[] desiredStates;
     switch (drive_mode) {
       case field_oriented:
-      this.target_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, angle);
-        desiredStates = swerve_kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, angle));
+        this.target_speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, angle);
+        desiredStates = swerve_kinematics
+            .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, angle));
         break;
       default:
         this.target_speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
@@ -172,7 +171,8 @@ public class Chassis extends SubsystemBase {
     for (wheels wheel : wheels.values()) {
       swerve_modules[wheel.ordinal()].set(desiredStates[wheel.ordinal()]);
     }
-    // SwerveModuleState[] desiredStates = swerve_kinematics.toSwerveModuleStates(field_oriented_target_speeds)
+    // SwerveModuleState[] desiredStates =
+    // swerve_kinematics.toSwerveModuleStates(field_oriented_target_speeds)
   }
 
   public void stop() {

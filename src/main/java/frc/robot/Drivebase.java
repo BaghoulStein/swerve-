@@ -17,12 +17,12 @@ public class Drivebase extends SubsystemBase {
   private static Drivebase instance;
 
   public enum controlMode {
-    robot_oriented, field_oriented
+    robotOriented, fieldOriented
   };
 
-  public enum wheels {
-    left_front, right_front,
-    left_back, right_back
+  public enum Wheels {
+    leftFront, rightFront,
+    leftBack, rightBack
   };
 
   private SwerveModule[] swerveModules;
@@ -30,7 +30,7 @@ public class Drivebase extends SubsystemBase {
 
   private AHRS NavX;
 
-  private controlMode drive_mode;
+  private controlMode driveMode;
 
   private SwerveDriveKinematics swerveKinematics;
 
@@ -41,10 +41,10 @@ public class Drivebase extends SubsystemBase {
 
   private Drivebase() {
     swerveModules = new SwerveModule[4];
-    swerveModules[wheels.left_front.ordinal()] = new SwerveModule(RobotContainer.FLModule);
-    swerveModules[wheels.right_front.ordinal()] = new SwerveModule(RobotContainer.FRModule);
-    swerveModules[wheels.left_back.ordinal()] = new SwerveModule(RobotContainer.BLModule);
-    swerveModules[wheels.right_back.ordinal()] = new SwerveModule(RobotContainer.BRModule);
+    swerveModules[Wheels.leftFront.ordinal()] = new SwerveModule(RobotContainer.FLModule);
+    swerveModules[Wheels.rightFront.ordinal()] = new SwerveModule(RobotContainer.FRModule);
+    swerveModules[Wheels.leftBack.ordinal()] = new SwerveModule(RobotContainer.BLModule);
+    swerveModules[Wheels.rightBack.ordinal()] = new SwerveModule(RobotContainer.BRModule);
 
     moduleStates = new SwerveModuleState[4];
 
@@ -58,7 +58,7 @@ public class Drivebase extends SubsystemBase {
 
     swerveKinematics = SwerveModuleConstants.swerveKinematics;
 
-    drive_mode = controlMode.field_oriented;
+    driveMode = controlMode.fieldOriented;
 
     calibrate();
 
@@ -68,8 +68,8 @@ public class Drivebase extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    // return odometry.getPoseMeters();
-    return new Pose2d();
+    return odometry.getPoseMeters();
+    // return new Pose2d();
   }
 
   public void resetOdometry(Pose2d initalPose2d) {
@@ -92,7 +92,7 @@ public class Drivebase extends SubsystemBase {
   }
 
   public void reset(Pose2d position) {
-    for (wheels wheel : wheels.values()) {
+    for (Wheels wheel : Wheels.values()) {
       swerveModules[wheel.ordinal()].reset();
       moduleStates[wheel.ordinal()] = new SwerveModuleState();
     }
@@ -115,7 +115,7 @@ public class Drivebase extends SubsystemBase {
   }
 
   public void update() {
-    for (wheels wheel : wheels.values()) {
+    for (Wheels wheel : Wheels.values()) {
       swerveModules[wheel.ordinal()].update();
       moduleStates[wheel.ordinal()] = swerveModules[wheel.ordinal()].getCurrentState();
     }
@@ -126,7 +126,7 @@ public class Drivebase extends SubsystemBase {
   }
 
   public void setControlMode(controlMode drive_mode) {
-    this.drive_mode = drive_mode;
+    this.driveMode = drive_mode;
   }
 
   public void setChassisSpeeds(ChassisSpeeds target_speeds) {
@@ -134,7 +134,7 @@ public class Drivebase extends SubsystemBase {
 
     SwerveModuleState[] desiredStates = swerveKinematics.toSwerveModuleStates(target_speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveModuleConstants.freeSpeedMetersPerSecond);
-    for (wheels wheel : wheels.values()) {
+    for (Wheels wheel : Wheels.values()) {
       swerveModules[wheel.ordinal()].set(desiredStates[wheel.ordinal()]);
     }
   }
@@ -144,8 +144,8 @@ public class Drivebase extends SubsystemBase {
     SmartDashboard.putNumber("ySpeed", ySpeed);
     SmartDashboard.putNumber("rot", rot);
     SwerveModuleState[] desiredStates;
-    switch (drive_mode) {
-      case field_oriented:
+    switch (driveMode) {
+      case fieldOriented:
         this.targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, angle);
         desiredStates = swerveKinematics
             .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, angle));
@@ -157,7 +157,7 @@ public class Drivebase extends SubsystemBase {
     }
     System.out.println(this.targetSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveModuleConstants.freeSpeedMetersPerSecond);
-    for (wheels wheel : wheels.values()) {
+    for (Wheels wheel : Wheels.values()) {
       swerveModules[wheel.ordinal()].set(desiredStates[wheel.ordinal()]);
     }
     // SwerveModuleState[] desiredStates =
@@ -165,7 +165,7 @@ public class Drivebase extends SubsystemBase {
   }
 
   public void stop() {
-    for (wheels wheel : wheels.values()) {
+    for (Wheels wheel : Wheels.values()) {
       swerveModules[wheel.ordinal()].stop();
     }
 

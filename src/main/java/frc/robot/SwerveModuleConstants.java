@@ -3,6 +3,17 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
+/**
+ * The constants for the Swerve module.
+ * @param idDrive The ID of the drive motor.
+ * @param driveGains The drive gains.
+ * @param idSteering The ID of the steering motor.
+ * @param steeringGains The steering gains.
+ * @param cancoderZeroAngle The zero angle of the CANCoder.
+ * @param canCoderId The CANCoder ID.
+ * @param isSteeringInverted Whether the steering is inverted.
+ * @param isDriveInverted Whether the drive is inverted.
+ */
 public class SwerveModuleConstants {
   public static final double kTrackWidth = 0.55; // Distance between right and left wheels
   public static final double kWheelBase = 0.55; // Distance between front and back wheels

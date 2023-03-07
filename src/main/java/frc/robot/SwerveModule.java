@@ -17,6 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/**
+ * The periodic function for the SwerveModule.
+ */
 public class SwerveModule extends SubsystemBase {
   private TalonFX m_driveMotor;
   private CANSparkMax m_steeringMotor;
@@ -57,6 +60,9 @@ public class SwerveModule extends SubsystemBase {
     CommandScheduler.getInstance().registerSubsystem(this);
   }
 
+  /**
+   * Updates the state of the module.
+   */
   public void update() {
     SmartDashboard.putNumber(moduleName + "Cancoder position", getAbsolutePosition());
     SmartDashboard.putNumber(moduleName + "Neo encoder position",
@@ -67,6 +73,13 @@ public class SwerveModule extends SubsystemBase {
         / SwerveModuleConstants.driveRatio;
   }
 
+  /**
+   * Configures a CANSparkMax with the given gains and inversion.
+   * @param id The ID of the CANSparkMax.
+   * @param gains The PIDFGains to use.
+   * @param isInverted Whether the CANSparkMax should be inverted.
+   * @return The configured CANSparkMax.
+   */
   private CANSparkMax configSparkMax(int id,
       PIDFGains gains, boolean isInverted) {
     CANSparkMax sparkMax = new CANSparkMax(id, MotorType.kBrushless);
@@ -87,6 +100,12 @@ public class SwerveModule extends SubsystemBase {
     return sparkMax;
   }
 
+  /**
+  * Configures the CANCoder with the given ID.
+  * @param id The ID of the CANCoder to configure.
+  * @param zeroAngle The zero angle of the CANCoder.
+  * @return The configured CANCoder.
+   */
   private CANCoder configCANCoder(int id, double zeroAngle) {
 
     CANCoder canCoder = new CANCoder(id);
@@ -97,11 +116,17 @@ public class SwerveModule extends SubsystemBase {
     return canCoder;
   }
 
+  /**
+   * Resets the motors to their default position.
+   */
   public void resetMotors() {
     m_driveMotor.set(ControlMode.PercentOutput, 0);
     m_steeringMotor.set(0);
   }
 
+  /**
+   * Resets the motors and the state of the swerve drivetrain.
+   */
   public void reset() {
     resetMotors();
 
@@ -110,6 +135,13 @@ public class SwerveModule extends SubsystemBase {
     currentState = new SwerveModuleState();
   }
 
+  /**
+   * Configures TalonFX with the gains from the config file.
+   * @param id The ID of the TalonFX to configure.
+   * @param gains The PIDFGains to use.
+   * @param isInverted Whether the TalonFX is inverted.
+   * @return The configured TalonFX.
+   */
   private TalonFX configTalonFX(int id, PIDFGains gains, boolean isInverted) {
     TalonFX talon = new TalonFX(id);
     talon.config_kP(0, gains.getP());
@@ -124,6 +156,10 @@ public class SwerveModule extends SubsystemBase {
     return talon;
   }
 
+  /**
+  * Sets the drivetrain to brake or coast mode.
+  * @param isBrake whether to set the drivetrain to brake mode or not.
+   */
   public void setNeutralMode(boolean isBrake) {
     if (isBrake) {
       m_driveMotor.setNeutralMode(NeutralMode.Brake);
@@ -134,34 +170,63 @@ public class SwerveModule extends SubsystemBase {
     m_steeringMotor.setIdleMode(IdleMode.kCoast);
   }
 
+  /**
+   * Generates parameters for the targetState and sets it
+   * @param speed the desired module speed in meters/s
+   * @param angle the desired module ange in degrees
+   */
   public void set(double angle, double speed) {
     targetState.angle = Rotation2d.fromDegrees(angle);
     targetState.speedMetersPerSecond = speed;
     set(targetState);
   }
 
+  /**
+   * Sets the target state of the module.
+   * @param target The target state of the module.
+   */
   public void set(SwerveModuleState target) {
     target = SwerveModuleState.optimize(target, currentState.angle);
     this.targetState = target;
 
     m_driveMotor.set(ControlMode.Velocity, meterPerSecToRPS(this.targetState.speedMetersPerSecond) / 10 * 2048);
-    SmartDashboard.putNumber(moduleName + "desired angle", this.targetState.angle.getDegrees());
+    SmartDashboard.putNumber(moduleName + "desired angle", minChangeInSteerAngle(this.targetState.angle.getDegrees()));
     m_steeringMotor.getPIDController().setReference(degreesToRotations(minChangeInSteerAngle(this.targetState.angle.getDegrees())),
-        ControlType.kPosition);
+        CANSparkMax.ControlType.kPosition);
   }
 
+  /**
+   * Converts a speed in meters per second to rotations per second.
+   * @param speed The speed in meters per second.
+   * @return The speed in rotations per second.
+   */
   private double meterPerSecToRPS(double speed) {
     return speed * SwerveModuleConstants.driveRatio / SwerveModuleConstants.wheelCircumferenceMeters;
   }
 
+  /**
+   * Returns the current RPS of the drive motor.
+   * @return The current RPS of the drive motor.
+   */
   public double getRPS() {
     return m_driveMotor.getSelectedSensorVelocity() * 10 / 2048;
   }
 
+  /**
+   * Converts an angle in degrees to rotations.
+   * @param angle The angle in degrees.
+   * @return The angle in rotations.
+   */
   private double degreesToRotations(double angle) {
     return angle * SwerveModuleConstants.steeringRatio / 360.0;
   }
 
+  /**
+  * Returns the minimum angle that the steer can be set to, given the current angle and the
+  * number of rotations that the steer has been rotated.
+  * @param angle the current angle of the steer, in degrees.
+  * @return the minimum angle that the steer can be set to, in degrees.
+   */
   private double minChangeInSteerAngle(double angle) {
     double full_rotations = (int) m_steerRotations;
     double close_angle = angle + 360.0 * full_rotations;
@@ -177,33 +242,59 @@ public class SwerveModule extends SubsystemBase {
     return minAngle;
   }
 
+  /**
+   * Returns the current angle of the player.
+   * @return the current angle of the player.
+   */
   public double getAngle() {
     return currentState.angle.getDegrees();
   }
 
+  /**
+   * Locks the steering motor to the current state's angle.
+   */
   public void lockPosition() {
     m_steeringMotor.getPIDController().setReference(degreesToRotations(currentState.angle.getDegrees()), ControlType.kPosition);
   }
 
+  /**
+   * Returns the current position of the module.
+   * @return The current position of the module.
+   */
   public SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(
         m_driveMotor.getSelectedSensorPosition() / 2048 / SwerveModuleConstants.driveRatio,
         currentState.angle);
   }
 
+  /**
+   * Stops the drivetrain and steering motor.
+   */
   public void stop() {
     m_driveMotor.set(ControlMode.PercentOutput, 0);
     m_steeringMotor.set(0);
   }
 
+  /**
+   * Returns the current state of the module.
+   * @return The current state of the module.
+   */
   public SwerveModuleState getCurrentState() {
     return currentState;
   }
 
+  /**
+   * Returns the speed of the player in meters per second.
+   * @return the speed of the player in meters per second.
+   */
   public double getSpeed() {
     return currentState.speedMetersPerSecond;
   }
 
+  /**
+   * Returns the absolute position of the stream in milliseconds.
+   * @return the absolute position of the stream in milliseconds.
+   */
   public double getAbsolutePosition() {
     return absEncoder.getAbsolutePosition();
   }

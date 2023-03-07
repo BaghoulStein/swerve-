@@ -14,10 +14,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class SwerveModule extends SubsystemBase {
+public class SwerveModule {
   private TalonFX m_driveMotor;
   private CANSparkMax m_steeringMotor;
   private CANCoder absEncoder;
@@ -58,7 +56,6 @@ public class SwerveModule extends SubsystemBase {
         moduleName = "undefined ";
         break;
     }
-    CommandScheduler.getInstance().registerSubsystem(this);
   }
 
   public void update() {
@@ -297,7 +294,4 @@ public class SwerveModule extends SubsystemBase {
     return absEncoder.getAbsolutePosition();
   }
 
-  @Override
-  public void periodic() {
-  }
 }

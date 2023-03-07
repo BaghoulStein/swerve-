@@ -17,9 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-/**
- * The periodic function for the SwerveModule.
- */
 public class SwerveModule extends SubsystemBase {
   private TalonFX m_driveMotor;
   private CANSparkMax m_steeringMotor;
@@ -30,6 +27,10 @@ public class SwerveModule extends SubsystemBase {
   private SwerveModuleState targetState;
   private SwerveModuleState currentState;
 
+  /**
+   * Constructs a SwerveModule object.
+   * @param cModuleConstants The constants for this module.
+   */
   public SwerveModule(SwerveModuleConstants cModuleConstants) {
     absEncoder = configCANCoder(cModuleConstants.canCoderId, cModuleConstants.cancoderZeroAngle);
     m_driveMotor = configTalonFX(cModuleConstants.idDrive, cModuleConstants.driveGains, cModuleConstants.isDriveInverted);
@@ -60,9 +61,6 @@ public class SwerveModule extends SubsystemBase {
     CommandScheduler.getInstance().registerSubsystem(this);
   }
 
-  /**
-   * Updates the state of the module.
-   */
   public void update() {
     SmartDashboard.putNumber(moduleName + "Cancoder position", getAbsolutePosition());
     SmartDashboard.putNumber(moduleName + "Neo encoder position",

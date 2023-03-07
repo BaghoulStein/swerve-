@@ -32,11 +32,18 @@ public class RobotContainer {
     configureBindings();
   }
 
+  /**
+   * Configures the bindings for the controller.
+   */
   private void configureBindings() {
     controller.cross().onTrue(new InstantCommand(() -> Drivebase.getInstance().resetGyro()));
 
   }
 
+  /**
+   * Returns the state of the swerve module based on the controller input.
+   * @return the state of the swerve module based on the controller input.
+   */
   public static SwerveModuleState stateFromController() {
     double y = -controller.getLeftY();
     double x = controller.getLeftX();
@@ -48,6 +55,10 @@ public class RobotContainer {
     return new SwerveModuleState(Math.sqrt(x * x + y * y) * 0.5, new Rotation2d(x, y));
   }
 
+  /**
+   * Returns the speeds of the chassis based on the controller input.
+   * @return the speeds of the chassis based on the controller input.
+   */
   public static ChassisSpeeds speedsFromController() {
     double x = controller.getLeftX();
     double y = -controller.getLeftY();
@@ -67,12 +78,22 @@ public class RobotContainer {
     return Commands.print("No autonomous command configured");
   }
 
+  /**
+   * Calculates the deadband for a given value.
+   * @param value The value to calculate the deadband for.
+   * @return The deadband for the given value.
+   */
   public static double calculateDeadBand(double value) {
     if (Math.abs(value) < 0.2)
       return 0;
     return value;
   }
 
+  /**
+   * Calculates the raw axis value, applying deadband and scaling.
+   * @param axis the raw axis value to calculate deadband and scaling for
+   * @return the axis value after applying deadband and scaling
+   */
   public static double getRawAxis(int axis) {
     return calculateDeadBand(controller.getRawAxis(axis));
   }

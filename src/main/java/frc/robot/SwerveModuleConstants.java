@@ -20,8 +20,10 @@ public class SwerveModuleConstants {
   public static final double driveDPRMeters = wheelCircumferenceMeters * driveRatio;
   public static final double steeringPositionConversionFactor = 1 / steeringRatio * 360; // degrees / rotation
   public static final double steeringVelocityConversionFactor = steeringPositionConversionFactor / 60; // degrees /
-                                                                                                       // (rotations *
-                                                                                                       // seconds/minute)
+                                                                                                          // (rotations *
+                                                                                                          // seconds/minute)
+
+  // TODO: Configure k values for autonomous and teleop
   public static final PIDFGains xAutoPID = new PIDFGains(0.05, 0, 0);
   public static final PIDFGains yAutoPID = new PIDFGains(0.05, 0, 0);
   public static final PIDFGains angleAutoPID = new PIDFGains(0.1, 0, 0);

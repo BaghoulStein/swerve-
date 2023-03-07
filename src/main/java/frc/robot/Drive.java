@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class Drive extends CommandBase {
-  Chassis chassis = Chassis.getInstance();
+  Drivebase chassis = Drivebase.getInstance();
   public Drive() {
     addRequirements(chassis);
   }

@@ -10,15 +10,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private Chassis chassis;
+  private Drivebase chassis;
 
   private RobotContainer m_robotContainer;
 
   @Override
   public void robotInit() {
-    chassis = Chassis.getInstance();
+    chassis = Drivebase.getInstance();
     CommandScheduler.getInstance().setDefaultCommand(chassis, new Drive());
     m_robotContainer = new RobotContainer();
+    chassis.resetGyro();
   }
 
   @Override

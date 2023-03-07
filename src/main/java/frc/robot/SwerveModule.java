@@ -17,24 +17,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveModule extends SubsystemBase {
-  private TalonFX spin;
-  private CANSparkMax steer;
+  private TalonFX m_driveMotor;
+  private CANSparkMax m_steeringMotor;
   private CANCoder absEncoder;
 
-  private double steer_rotations;
+  private double m_steerRotations;
   public String moduleName;
-  private SwerveModuleState target;
-  private SwerveModuleState state;
+  private SwerveModuleState targetState;
+  private SwerveModuleState currentState;
 
   public SwerveModule(SwerveModuleConstants cModuleConstants) {
     absEncoder = configCANCoder(cModuleConstants.canCoderId, cModuleConstants.cancoderZeroAngle);
-    spin = configTalonFX(cModuleConstants.idDrive, cModuleConstants.driveGains, cModuleConstants.isDriveInverted);
-    steer = configSparkMax(cModuleConstants.idSteering, cModuleConstants.steeringGains,
+    m_driveMotor = configTalonFX(cModuleConstants.idDrive, cModuleConstants.driveGains, cModuleConstants.isDriveInverted);
+    m_steeringMotor = configSparkMax(cModuleConstants.idSteering, cModuleConstants.steeringGains,
         cModuleConstants.isSteeringInverted);
 
-    steer_rotations = 0;
-    target = new SwerveModuleState();
-    state = new SwerveModuleState();
+    m_steerRotations = 0;
+    targetState = new SwerveModuleState();
+    currentState = new SwerveModuleState();
 
     switch (cModuleConstants.idDrive) {
       case 2:
@@ -57,11 +57,11 @@ public class SwerveModule extends SubsystemBase {
 
   public void update() {
     SmartDashboard.putNumber(moduleName + "Cancoder position", getAbsolutePosition());
-    SmartDashboard.putNumber(moduleName + " Ceo encoder position",
-        steer.getEncoder().getPosition() * SwerveModuleConstants.steeringPositionConversionFactor);
-    steer_rotations = steer.getEncoder().getPosition() / SwerveModuleConstants.steeringRatio;
-    state.angle = Rotation2d.fromDegrees(steer_rotations * 360.0);
-    state.speedMetersPerSecond = getRPS() * SwerveModuleConstants.wheelCircumferenceMeters
+    SmartDashboard.putNumber(moduleName + "Neo encoder position",
+        m_steeringMotor.getEncoder().getPosition() * SwerveModuleConstants.steeringPositionConversionFactor);
+    m_steerRotations = m_steeringMotor.getEncoder().getPosition() / SwerveModuleConstants.steeringRatio;
+    currentState.angle = Rotation2d.fromDegrees(m_steerRotations * 360.0);
+    currentState.speedMetersPerSecond = getRPS() * SwerveModuleConstants.wheelCircumferenceMeters
         / SwerveModuleConstants.driveRatio;
   }
 
@@ -75,7 +75,7 @@ public class SwerveModule extends SubsystemBase {
     sparkMax.setInverted(isInverted);
     sparkMax.getPIDController().setOutputRange(-1, 1);
     sparkMax.setSmartCurrentLimit(40);
-    sparkMax.setIdleMode(IdleMode.kCoast);
+    sparkMax.setIdleMode(IdleMode.kBrake);
     sparkMax.setClosedLoopRampRate(0.01);
     sparkMax.enableVoltageCompensation(12);
     sparkMax.getEncoder().setPosition(absEncoder.getAbsolutePosition() /
@@ -89,7 +89,6 @@ public class SwerveModule extends SubsystemBase {
 
     CANCoder canCoder = new CANCoder(id);
     canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-    // canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
     // Configure the offset angle of the magnet
     canCoder.configMagnetOffset(360 - zeroAngle);
 
@@ -97,16 +96,16 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void resetMotors() {
-    spin.set(ControlMode.PercentOutput, 0);
-    steer.set(0);
+    m_driveMotor.set(ControlMode.PercentOutput, 0);
+    m_steeringMotor.set(0);
   }
 
   public void reset() {
     resetMotors();
 
-    steer_rotations = 0;
-    target = new SwerveModuleState();
-    state = new SwerveModuleState();
+    m_steerRotations = 0;
+    targetState = new SwerveModuleState();
+    currentState = new SwerveModuleState();
   }
 
   private TalonFX configTalonFX(int id, PIDFGains gains, boolean isInverted) {
@@ -124,18 +123,18 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void set(double angle, double speed) {
-    target.angle = Rotation2d.fromDegrees(angle);
-    target.speedMetersPerSecond = speed;
-    set(target);
+    targetState.angle = Rotation2d.fromDegrees(angle);
+    targetState.speedMetersPerSecond = speed;
+    set(targetState);
   }
 
   public void set(SwerveModuleState target) {
-    target = SwerveModuleState.optimize(target, state.angle);
-    this.target = target;
+    target = SwerveModuleState.optimize(target, currentState.angle);
+    this.targetState = target;
 
-    spin.set(ControlMode.Velocity, meterPerSecToRPS(this.target.speedMetersPerSecond) / 10 * 2048);
-    SmartDashboard.putNumber(moduleName + " desired angle", this.target.angle.getDegrees());
-    steer.getPIDController().setReference(degreesToRotations(minChangeInSteerAngle(this.target.angle.getDegrees())),
+    m_driveMotor.set(ControlMode.Velocity, meterPerSecToRPS(this.targetState.speedMetersPerSecond) / 10 * 2048);
+    SmartDashboard.putNumber(moduleName + "desired angle", this.targetState.angle.getDegrees());
+    m_steeringMotor.getPIDController().setReference(degreesToRotations(minChangeInSteerAngle(this.targetState.angle.getDegrees())),
         ControlType.kPosition);
   }
 
@@ -144,7 +143,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getRPS() {
-    return spin.getSelectedSensorVelocity() * 10 / 2048;
+    return m_driveMotor.getSelectedSensorVelocity() * 10 / 2048;
   }
 
   private double degreesToRotations(double angle) {
@@ -152,7 +151,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private double minChangeInSteerAngle(double angle) {
-    double full_rotations = (int) steer_rotations;
+    double full_rotations = (int) m_steerRotations;
     double close_angle = angle + 360.0 * full_rotations;
     double angle_plus = close_angle + 360;
     double angle_minus = close_angle - 360;
@@ -167,30 +166,30 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getAngle() {
-    return state.angle.getDegrees();
+    return currentState.angle.getDegrees();
   }
 
   public void lockPosition() {
-    steer.getPIDController().setReference(degreesToRotations(state.angle.getDegrees()), ControlType.kPosition);
+    m_steeringMotor.getPIDController().setReference(degreesToRotations(currentState.angle.getDegrees()), ControlType.kPosition);
   }
 
   public SwerveModulePosition getModulePosition() {
     return new SwerveModulePosition(
-        spin.getSelectedSensorPosition() / 2048 / SwerveModuleConstants.driveRatio,
-        state.angle);
+        m_driveMotor.getSelectedSensorPosition() / 2048 / SwerveModuleConstants.driveRatio,
+        currentState.angle);
   }
 
   public void stop() {
-    spin.set(ControlMode.PercentOutput, 0);
-    steer.set(0);
+    m_driveMotor.set(ControlMode.PercentOutput, 0);
+    m_steeringMotor.set(0);
   }
 
-  public SwerveModuleState getState() {
-    return state;
+  public SwerveModuleState getCurrentState() {
+    return currentState;
   }
 
   public double getSpeed() {
-    return state.speedMetersPerSecond;
+    return currentState.speedMetersPerSecond;
   }
 
   public double getAbsolutePosition() {

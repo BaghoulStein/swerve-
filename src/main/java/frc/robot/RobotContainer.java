@@ -33,7 +33,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    controller.cross().onTrue(new InstantCommand(() -> Chassis.getInstance().resetGyro()));
+    controller.cross().onTrue(new InstantCommand(() -> Drivebase.getInstance().resetGyro()));
 
   }
 

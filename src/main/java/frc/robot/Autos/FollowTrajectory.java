@@ -4,12 +4,12 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Chassis;
+import frc.robot.Drivebase;
 import frc.robot.SwerveModuleConstants;
 
 public class FollowTrajectory extends SequentialCommandGroup {
 
-  public FollowTrajectory(Chassis chassis, PathPlannerTrajectory trajectory, boolean resetOdometry) {
+  public FollowTrajectory(Drivebase chassis, PathPlannerTrajectory trajectory, boolean resetOdometry) {
 
     addRequirements(chassis);
     if (resetOdometry)

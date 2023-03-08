@@ -265,6 +265,10 @@ public class Drivebase extends SubsystemBase {
     return angle;
   }
 
+  public double getAngleDegrees() { return NavX.getAngle(); }
+
+  public double getPitch() { return NavX.getPitch(); }
+
   public Command followTrajectory(PathPlannerTrajectory trajectory, boolean isFirstPath) {
     return new SequentialCommandGroup(
         new InstantCommand(() -> {

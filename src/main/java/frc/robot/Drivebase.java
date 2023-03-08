@@ -1,6 +1,8 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,9 +11,15 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Drivebase extends SubsystemBase {
   private static Drivebase instance;
@@ -67,6 +75,17 @@ public class Drivebase extends SubsystemBase {
 
     reset(new Pose2d());
     NavX.reset();
+
+    new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
+      for (SwerveModule swerveModule : swerveModules) { 
+        swerveModule.setNeutralMode(true);
+      }
+    }, () -> {
+      for (SwerveModule swerveModule : swerveModules) {
+        swerveModule.setNeutralMode(false);
+      }
+    }));
+
     CommandScheduler.getInstance().registerSubsystem(this);
   }
 
@@ -244,6 +263,26 @@ public class Drivebase extends SubsystemBase {
 
   public Rotation2d getAngleRotation() {
     return angle;
+  }
+
+
+  public Command followTrajectory(PathPlannerTrajectory trajectory, boolean isFirstPath) {
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> {
+        if (isFirstPath) {
+          this.resetOdometry(trajectory.getInitialHolonomicPose());
+          NavX.setAngleAdjustment(trajectory.getInitialHolonomicPose().getRotation().getDegrees());
+        }
+      }),
+        new PPSwerveControllerCommand(trajectory,
+            this::getPose,
+            SwerveModuleConstants.xAutoPID.createPIDController(),
+            SwerveModuleConstants.yAutoPID.createPIDController(),
+            SwerveModuleConstants.angleAutoPID.createPIDController(),
+            this::setChassisSpeeds,
+            this),
+      new InstantCommand(() -> { this.stop(); })
+    );
   }
 
 

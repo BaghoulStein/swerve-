@@ -265,26 +265,26 @@ public class Drivebase extends SubsystemBase {
     return angle;
   }
 
-
   public Command followTrajectory(PathPlannerTrajectory trajectory, boolean isFirstPath) {
     return new SequentialCommandGroup(
-      new InstantCommand(() -> {
-        if (isFirstPath) {
-          this.resetOdometry(trajectory.getInitialHolonomicPose());
-          NavX.setAngleAdjustment(trajectory.getInitialHolonomicPose().getRotation().getDegrees());
-        }
-      }),
-        new PPSwerveControllerCommand(trajectory,
+        new InstantCommand(() -> {
+          if (isFirstPath) {
+            this.resetOdometry(trajectory.getInitialHolonomicPose());
+            NavX.setAngleAdjustment(trajectory.getInitialHolonomicPose().getRotation().getDegrees());
+          }
+        }),
+        new PPSwerveControllerCommand(
+            trajectory,
             this::getPose,
             SwerveModuleConstants.xAutoPID.createPIDController(),
             SwerveModuleConstants.yAutoPID.createPIDController(),
             SwerveModuleConstants.angleAutoPID.createPIDController(),
             this::setChassisSpeeds,
             this),
-      new InstantCommand(() -> { this.stop(); })
-    );
+        new InstantCommand(() -> {
+          this.stop();
+        }));
   }
-
 
   @Override
   public void periodic() {

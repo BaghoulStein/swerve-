@@ -71,7 +71,7 @@ public class Drivebase extends SubsystemBase {
     reset(new Pose2d());
     NavX.reset();
 
-    odometry = new SwerveDriveOdometry(swerveKinematics, NavX.getRotation2d(), getModulePositions());
+    odometry = new SwerveDriveOdometry(swerveKinematics, Rotation2d.fromDegrees(0), getModulePositions());
 
     new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
       for (SwerveModule swerveModule : swerveModules) { 
@@ -147,6 +147,7 @@ public class Drivebase extends SubsystemBase {
 
     NavX.reset();
     NavX.setAngleAdjustment(position.getRotation().getDegrees());
+    odometry.resetPosition(Rotation2d.fromDegrees(NavX.getAngle()), getModulePositions(), position);
 
     targetSpeeds = new ChassisSpeeds();
 

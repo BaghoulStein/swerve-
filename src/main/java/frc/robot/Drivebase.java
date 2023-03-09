@@ -59,11 +59,6 @@ public class Drivebase extends SubsystemBase {
 
     moduleStates = new SwerveModuleState[4];
 
-    odometry = new SwerveDriveOdometry(swerveKinematics, angle,
-        new SwerveModulePosition[] { swerveModules[0].getModulePosition(), swerveModules[1].getModulePosition(),
-            swerveModules[2].getModulePosition(),
-            swerveModules[3].getModulePosition() });
-
 
     NavX = new AHRS();
 
@@ -75,6 +70,8 @@ public class Drivebase extends SubsystemBase {
 
     reset(new Pose2d());
     NavX.reset();
+
+    odometry = new SwerveDriveOdometry(swerveKinematics, NavX.getRotation2d(), getModulePositions());
 
     new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
       for (SwerveModule swerveModule : swerveModules) { 
